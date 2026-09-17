@@ -31,6 +31,20 @@ It is deliberately small: one endpoint, one table, ~120 lines of PHP.
 `poll` returns and deletes every blob queued for that handle (delete-on-fetch; the sender re-sends
 on its own timer, so a dropped poll self-heals).
 
+### Fallback: relay-forward (only when a direct connection is impossible)
+
+Almost always the two devices connect peer-to-peer and the file never touches this server. In the
+rare case where neither side can be reached directly (typically one peer on carrier-grade NAT), the
+apps fall back to forwarding the **already end-to-end-encrypted** stream through the relay, keyed by
+session, so the transfer still completes. The relay only ever sees ciphertext.
+
+```
+{ "op":"data",  "to":"age1...",  "session":"<hex>", "chunks":[ "<base64>", ... ] }  ->  { "ok":true, "stored":N }
+{ "op":"fetch", "for":"age1...", "session":"<hex>" }                                ->  { "ok":true, "chunks":[ "<base64>", ... ] }
+```
+
+Same delete-on-fetch, short-TTL design as signaling.
+
 ## Run your own
 
 See [INSTALL.md](INSTALL.md). In short: PHP 8+, MySQL/MariaDB, point a vhost at `public/`, import
