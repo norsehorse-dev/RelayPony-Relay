@@ -71,4 +71,19 @@ files still go straight device-to-device, never through it.
 
 - HTTPS only. The blobs are opaque, but the relay is an internet endpoint; run it behind TLS.
 - No cron needed: expired rows are reaped inline on each request.
-- Tuning lives at the top of `src/signal.php` (TTL, payload cap, per-recipient queue cap).
+- Tuning lives at the top of `src/signal.php` (TTL, payload cap, per-recipient queue cap, per-IP
+  rate limits).
+- Rate limiting counts requests per salted hash of the client IP over a 60 second window; the IP
+  itself is never stored. Set `rate_salt` in `config.php` to a long random string.
+
+## Upgrading an existing relay
+
+Re-run the schema. Every table is `CREATE TABLE IF NOT EXISTS`, so existing data is untouched and
+only the new tables (rate limits and word-code nameplates) are added:
+
+```
+mysql -u relaypony_relay -p relaypony_relay < sql/schema.sql
+```
+
+Then add `rate_salt` to your `config.php` (see `config.sample.php`). No new database grants are
+needed. If the table is missing, the relay keeps working and simply doesn't rate limit.

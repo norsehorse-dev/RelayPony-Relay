@@ -13,4 +13,6 @@ return [
         'user' => 'relaypony_relay',
         'pass' => 'CHANGE_ME',
     ],
+    // Salt for the hashed client IPs used by rate limiting. Any long random string.
+    'rate_salt' => 'CHANGE_ME_TO_A_RANDOM_STRING',
 ];
