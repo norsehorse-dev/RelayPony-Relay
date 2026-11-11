@@ -1,4 +1,5 @@
 django~=6.1.0
+django-allow-cidr
 gunicorn
 psycopg[binary,pool]>=3.2
 PyMySQL
