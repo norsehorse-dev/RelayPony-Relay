@@ -11,10 +11,15 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', None)
 DEBUG = '1' == os.getenv('DJANGO_DEBUG', '0')
 DB_ENGINE = os.getenv('DB_ENGINE', 'default').lower()
 ALLOWED_HOSTS = [h for h in os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost').split(',') if h]
+ALLOWED_CIDR_NETS = [
+    '192.168.0.0/16',
+    '10.0.0.0/8',
+]
 
 INSTALLED_APPS = ['signaling']
 
 MIDDLEWARE = [
+    'allow_cidr.middleware.AllowCIDRMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.middleware.common.CommonMiddleware',
 ]
