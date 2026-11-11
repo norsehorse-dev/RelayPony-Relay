@@ -1,0 +1,36 @@
+name: chmod executables
+
+on:
+  push:
+    branches:
+      - tcely-main
+
+jobs:
+  chmod:
+    runs-on: ubuntu-slim
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Ensure executable files
+        shell: bash
+        run: |
+          _awk_prog='
+            BEGIN { retval=1; }
+            1 == NR && /^#!\/usr\/bin\/env/ { retval=0; }
+            END { exit retval; }
+            '
+          find docker -type f \
+            -exec awk "${_awk_prog}" '{}' ';' \
+            -exec chmod -c a+rx '{}' ';'
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          branch: 'ci-chmod'
+          create_branch: true
+          commit_message: 'chore: force files to be executable'
+
