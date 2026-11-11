@@ -1,8 +1,11 @@
 import os
 
 from pathlib import Path
+from types import SimpleNamespace
 
 from django.core.exceptions import ImproperlyConfigured
+
+from signaling import settings as _signaling_settings
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -17,6 +20,16 @@ ALLOWED_CIDR_NETS = [
 ]
 
 INSTALLED_APPS = ['signaling']
+
+# Include signaling.settings in its own namespace
+SIGNALING = SimpleNamespace(
+    **{
+        k: v
+        for k, v in vars(_signaling_settings).items()
+        if k.isupper()
+    }
+)
+del _signaling_settings
 
 MIDDLEWARE = [
     'allow_cidr.middleware.AllowCIDRMiddleware',
