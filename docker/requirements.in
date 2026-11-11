@@ -1,0 +1,5 @@
+django~=6.1.0
+gunicorn
+psycopg[binary,pool]>=3.2
+PyMySQL
+
